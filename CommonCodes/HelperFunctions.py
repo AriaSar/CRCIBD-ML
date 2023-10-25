@@ -7,6 +7,7 @@ from imblearn.combine import SMOTETomek
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
+from imblearn.under_sampling import RandomUnderSampler
 
 def SVFS(train_x, train_y, th_irr=3, diff_threshold=1.7, th_red=4, k=100, alpha=50, beta=5):   
     _features = []
@@ -21,7 +22,7 @@ def SVFS(train_x, train_y, th_irr=3, diff_threshold=1.7, th_red=4, k=100, alpha=
     return _features[0]
 
 def oversample(df):
-    smt = SMOTETomek(random_state=1)
+    smt = SMOTETomek()
     y = df.iloc[:,-1]
     X = df.iloc[:,:-1]
     X, y = smt.fit_resample(X, y)
@@ -29,6 +30,15 @@ def oversample(df):
     X.columns = np.arange(len(X.columns))
     df_oversample = X.copy()
     return df_oversample
+
+def undersample(df):
+    rus = RandomUnderSampler()
+    y = df.iloc[:, -1]
+    X = df.iloc[:, :-1]
+    X_resampled, y_resampled = rus.fit_resample(X, y)
+    df_undersampled = pd.concat([X_resampled, y_resampled], axis=1)
+    df_undersampled.columns = np.arange(len(df_undersampled.columns))
+    return df_undersampled
 
 def minmax_scaler(vector):
     scaler = MinMaxScaler()
